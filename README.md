@@ -2,6 +2,8 @@
 
 ## Introduction
 
+NOTE: I (RAFEEQ) MOVED MY UP TO DATE CONFIG FILES IN MY CONFIG-FILES REPO
+
 A starting point for Neovim that is:
 
 * Small

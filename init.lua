@@ -198,7 +198,6 @@ end, { desc = '[b]uffer [D]elete all other buffers' })
 
 vim.keymap.set('n', '<leader>cd', '<cmd>cd %:p:h<CR>', { desc = '[c]hange [d]irectory to current directory' })
 
-
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
 -- is not what someone will guess without a bit more experience.
@@ -225,7 +224,6 @@ vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper win
 -- Buffer navigation
 vim.keymap.set('n', '<M-h>', '<cmd>bprevious<CR>', { desc = 'Move to the left buffer' })
 vim.keymap.set('n', '<M-l>', '<cmd>bnext<CR>', { desc = 'Move to the right buffer' })
-
 
 -- NOTE: Some terminals have colliding keymaps or are not able to send distinct keycodes
 -- vim.keymap.set("n", "<C-S-h>", "<C-w>H", { desc = "Move window to the left" })
@@ -292,10 +290,6 @@ require('lazy').setup({
   --
   -- Use `opts = {}` to automatically pass options to a plugin's `setup()` function, forcing the plugin to be loaded.
   --
-  {
-    'morhetz/gruvbox',
-    priority = 1000, -- Load before other plugins
-  },
 
   -- Alternatively, use `config = function() ... end` for full control over the configuration.
   -- If you prefer to call `setup` explicitly, use:
@@ -917,28 +911,6 @@ require('lazy').setup({
     },
   },
 
-  { -- You can easily change to a different colorscheme.
-    -- Change the name of the colorscheme plugin below, and then
-    -- change the command in the config to whatever the name of that colorscheme is.
-    --
-    -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
-    'folke/tokyonight.nvim',
-    priority = 1000, -- Make sure to load this before all the other start plugins.
-    config = function()
-      ---@diagnostic disable-next-line: missing-fields
-      require('tokyonight').setup {
-        styles = {
-          comments = { italic = false }, -- Disable italics in comments
-        },
-      }
-
-      -- Load the colorscheme here.
-      -- Like many other themes, this one has different styles, and you could load
-      -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-      vim.cmd.colorscheme 'gruvbox'
-    end,
-  },
-
   -- Highlight todo, notes, etc in comments
   { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
 
@@ -979,7 +951,13 @@ require('lazy').setup({
       --  Check out: https://github.com/echasnovski/mini.nvim
     end,
   },
-  { 'nvim-treesitter/nvim-treesitter-context', opts = {} },
+  {
+    'nvim-treesitter/nvim-treesitter-context',
+    opts = {
+      mode = 'topline',
+      multiline_threshold = 1,
+    },
+  },
 
   { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
@@ -1013,6 +991,7 @@ require('lazy').setup({
             ['ac'] = '@class.outer',
             ['ic'] = '@class.inner',
           },
+          include_surrounding_whitespace = true,
         },
         move = {
           enable = true,
@@ -1027,11 +1006,28 @@ require('lazy').setup({
           },
           goto_previous_start = {
             ['[m'] = '@function.outer',
-            ['['] = '@class.outer',
+            ['[['] = '@class.outer',
           },
           goto_previous_end = {
             ['[M'] = '@function.outer',
             ['[]'] = '@class.outer',
+          },
+        },
+        swap = {
+          enable = true,
+          swap_next = {
+            ['<leader>a'] = '@parameter.inner',
+          },
+          swap_previous = {
+            ['<leader>A'] = '@parameter.inner',
+          },
+        },
+        lsp_interop = {
+          enable = true,
+          border = 'none',
+          peek_definition_code = {
+            ['<leader>df'] = '@function.outer',
+            ['<leader>dF'] = '@class.outer',
           },
         },
       },

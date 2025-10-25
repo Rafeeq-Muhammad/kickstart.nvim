@@ -173,6 +173,8 @@ vim.o.confirm = true
 --  See `:help hlsearch`
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
+local shell_popup = require 'custom.shell_popup'
+
 -- Diagnostic keymaps
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
 
@@ -180,6 +182,18 @@ vim.keymap.set('n', '<leader>cfp', function()
   vim.fn.setreg('+', vim.fn.expand '%:p')
   vim.notify('Copied file path: ' .. vim.fn.expand '%:p')
 end, { desc = '[C]opy [F]ile [P]ath' })
+
+vim.keymap.set('n', '<leader>Sr', shell_popup.command_runner(function()
+  local current = vim.fn.expand '%:p'
+  if current == '' then
+    vim.notify('No file associated with buffer', vim.log.levels.WARN)
+    return { vim.o.shell, '-c', 'true' }
+  end
+  local cmd = string.format('run %s', vim.fn.shellescape(current))
+  return { vim.o.shell, '-c', cmd }
+end, { title = 'Run current file' }), { desc = '[S]hell [r]un current file' })
+
+vim.keymap.set('n', '<leader>St', shell_popup.terminal_runner(nil, { title = 'Interactive Shell' }), { desc = '[S]hell [t]erminal popup' })
 
 vim.keymap.set('n', '<leader>bd', '<cmd>bdelete<CR>', { desc = '[B]uffer [D]elete current buffer' })
 

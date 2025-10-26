@@ -173,32 +173,14 @@ vim.o.confirm = true
 --  See `:help hlsearch`
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
+-- Load custom shell popup helpers (local automation/logic)
+require 'custom.shell_popup'
+
+-- Load miscellaneous keymaps/utilities
+require 'custom.misc'
+
 -- Diagnostic keymaps
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
-
-vim.keymap.set('n', '<leader>cfp', function()
-  vim.fn.setreg('+', vim.fn.expand '%:p')
-  vim.notify('Copied file path: ' .. vim.fn.expand '%:p')
-end, { desc = '[C]opy [F]ile [P]ath' })
-
-vim.keymap.set('n', '<leader>li', [[:s/\[/\{/g | s/\]/\}/g<CR>]], { desc = 'replace [l]eetcode [i]nput', silent = true })
-
-vim.keymap.set('n', '<leader>bd', '<cmd>bdelete<CR>', { desc = '[B]uffer [D]elete current buffer' })
-
-vim.keymap.set('n', '<leader>bD', function()
-  local current_buf = vim.api.nvim_get_current_buf()
-  local buffers = vim.api.nvim_list_bufs()
-  for _, buf in ipairs(buffers) do
-    if buf ~= current_buf then
-      local buf_info = vim.fn.getbufinfo(buf)[1]
-      if buf_info and buf_info.listed then
-        vim.cmd('bdelete! ' .. buf)
-      end
-    end
-  end
-end, { desc = '[b]uffer [D]elete all other buffers' })
-
-vim.keymap.set('n', '<leader>cd', '<cmd>cd %:p:h<CR>', { desc = '[c]hange [d]irectory to current directory' })
 
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which

@@ -183,23 +183,6 @@ vim.keymap.set('n', '<leader>cfp', function()
   vim.notify('Copied file path: ' .. vim.fn.expand '%:p')
 end, { desc = '[C]opy [F]ile [P]ath' })
 
-vim.keymap.set(
-  'n',
-  '<leader>Sr',
-  shell_popup.command_runner(function()
-    local current = vim.fn.expand '%:p'
-    if current == '' then
-      vim.notify('No file associated with buffer', vim.log.levels.WARN)
-      return { vim.o.shell, '-c', 'true' }
-    end
-    local cmd = string.format('run %s', vim.fn.shellescape(current))
-    return { vim.o.shell, '-c', cmd }
-  end, { title = 'Run current file' }),
-  { desc = '[S]hell [r]un current file' }
-)
-
-vim.keymap.set('n', '<leader>St', shell_popup.terminal_runner(nil, { title = 'Interactive Shell' }), { desc = '[S]hell [t]erminal popup' })
-
 vim.keymap.set('n', '<leader>li', [[:s/\[/\{/g | s/\]/\}/g<CR>]], { desc = 'replace [l]eetcode [i]nput', silent = true })
 
 vim.keymap.set('n', '<leader>bd', '<cmd>bdelete<CR>', { desc = '[B]uffer [D]elete current buffer' })

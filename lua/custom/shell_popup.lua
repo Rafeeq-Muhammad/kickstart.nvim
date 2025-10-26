@@ -2,6 +2,54 @@ local api = vim.api
 
 local M = {}
 
+local default_config = {
+  command_runner = {
+    key = '<leader>Sr',
+    desc = '[S]hell [r]un current file',
+    command = function()
+      local current = vim.fn.expand '%:p'
+      if current == '' then
+        vim.notify('No file associated with buffer', vim.log.levels.WARN)
+        return { vim.o.shell, '-c', 'true' }
+      end
+      local cmd = string.format('run %s', vim.fn.shellescape(current))
+      return { vim.o.shell, '-c', cmd }
+    end,
+    popup_opts = { title = 'Run current file' },
+    keymap_opts = {},
+  },
+  terminal_runner = {
+    key = '<leader>St',
+    desc = '[S]hell [t]erminal popup',
+    command = nil,
+    popup_opts = { title = 'Interactive Shell' },
+    keymap_opts = {},
+  },
+}
+
+local function merge_config(user_config)
+  user_config = user_config or {}
+  local merged = vim.deepcopy(default_config)
+  for name, cfg in pairs(user_config) do
+    if cfg == false then
+      merged[name] = false
+    else
+      merged[name] = vim.tbl_deep_extend('force', merged[name] or {}, cfg)
+    end
+  end
+  return merged
+end
+
+local function clear_active_mappings()
+  if not M._active_mappings then
+    return
+  end
+  for _, mapping in ipairs(M._active_mappings) do
+    pcall(vim.keymap.del, mapping.mode, mapping.lhs, mapping.opts)
+  end
+  M._active_mappings = nil
+end
+
 local function normalize_cmd(cmd)
   if cmd == nil then
     error('Command must not be nil')
@@ -126,5 +174,39 @@ function M.terminal_runner(cmd, opts)
     M.open_terminal(cmd, opts)
   end
 end
+
+function M.setup(config)
+  local merged = merge_config(config)
+
+  clear_active_mappings()
+  M._active_mappings = {}
+
+  local runner = merged.command_runner
+  if runner and runner.key then
+    vim.keymap.set(
+      'n',
+      runner.key,
+      M.command_runner(runner.command, runner.popup_opts),
+      vim.tbl_deep_extend('force', { desc = runner.desc }, runner.keymap_opts or {})
+    )
+    table.insert(M._active_mappings, { mode = 'n', lhs = runner.key, opts = runner.keymap_opts })
+  end
+
+  local terminal = merged.terminal_runner
+  if terminal and terminal.key then
+    vim.keymap.set(
+      'n',
+      terminal.key,
+      M.terminal_runner(terminal.command, terminal.popup_opts),
+      vim.tbl_deep_extend('force', { desc = terminal.desc }, terminal.keymap_opts or {})
+    )
+    table.insert(M._active_mappings, { mode = 'n', lhs = terminal.key, opts = terminal.keymap_opts })
+  end
+
+  M._configured = true
+  return M
+end
+
+M.setup()
 
 return M

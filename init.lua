@@ -173,9 +173,6 @@ vim.o.confirm = true
 --  See `:help hlsearch`
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
--- Load custom shell popup helpers (local automation/logic)
-require 'custom.shell_popup'
-
 -- Diagnostic keymaps
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
 
@@ -264,6 +261,9 @@ end
 ---@type vim.Option
 local rtp = vim.opt.rtp
 rtp:prepend(lazypath)
+
+-- Load my custom automation/logic
+require 'custom.shell_popup'
 
 -- [[ Configure and install plugins ]]
 --

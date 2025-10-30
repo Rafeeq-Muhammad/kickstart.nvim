@@ -65,4 +65,7 @@ return {
       vim.notify = notify
     end,
   },
+  {
+    'nvim-mini/mini.diff',
+  },
 }

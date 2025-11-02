@@ -68,4 +68,9 @@ return {
   {
     'nvim-mini/mini.diff',
   },
+  {
+    'folke/flash.nvim',
+    event = 'VeryLazy',
+    opts = {},
+  },
 }

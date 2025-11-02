@@ -73,4 +73,13 @@ return {
     event = 'VeryLazy',
     opts = {},
   },
+  {
+    'stevearc/aerial.nvim',
+    event = 'VeryLazy',
+    opts = {},
+  },
+  {
+    'sindrets/diffview.nvim',
+    cmd = { 'DiffviewOpen', 'DiffviewClose', 'DiffviewToggleFiles', 'DiffviewFocusFiles', 'DiffviewFileHistory' },
+  },
 }

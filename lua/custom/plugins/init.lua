@@ -3,6 +3,7 @@
 --
 -- See the kickstart.nvim README for more information
 return {
+<<<<<<< HEAD
   -- {
   -- 	"gioele/vim-autoswap",
   -- 	config = function()
@@ -81,5 +82,12 @@ return {
   {
     'sindrets/diffview.nvim',
     cmd = { 'DiffviewOpen', 'DiffviewClose', 'DiffviewToggleFiles', 'DiffviewFocusFiles', 'DiffviewFileHistory' },
+  },
+  {
+    'sainnhe/gruvbox-material',
+    priority = 1000,
+    config = function()
+    	vim.g.gruvbox_material_background = 'soft'
+    end,
   },
 }

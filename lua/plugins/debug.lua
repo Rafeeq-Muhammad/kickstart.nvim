@@ -5,7 +5,6 @@ return {
     'nvim-neotest/nvim-nio',
     'mason-org/mason.nvim',
     'jay-babu/mason-nvim-dap.nvim',
-    'leoluz/nvim-dap-go',
   },
   keys = {
     { '<F5>', function() require('dap').continue() end, desc = 'Debug: Start/Continue' },
@@ -23,7 +22,7 @@ return {
     require('mason-nvim-dap').setup {
       automatic_installation = true,
       handlers = {},
-      ensure_installed = { 'delve' },
+      ensure_installed = { 'codelldb' },
     }
 
     dapui.setup {
@@ -47,10 +46,29 @@ return {
     dap.listeners.before.event_terminated['dapui_config'] = dapui.close
     dap.listeners.before.event_exited['dapui_config'] = dapui.close
 
-    require('dap-go').setup {
-      delve = {
-        detached = vim.fn.has 'win32' == 0,
+    -- Configure C++ adapter
+    dap.adapters.codelldb = {
+      type = 'server',
+      port = '${port}',
+      executable = {
+        command = 'codelldb',
+        args = { '--port', '${port}' },
       },
     }
+
+    dap.configurations.cpp = {
+      {
+        name = 'Launch file',
+        type = 'codelldb',
+        request = 'launch',
+        program = function()
+          return vim.fn.getcwd() .. '/' .. vim.fn.expand '%:t:r'
+        end,
+        cwd = '${workspaceFolder}',
+        stopOnEntry = false,
+      },
+    }
+    dap.configurations.c = dap.configurations.cpp
+    dap.configurations.rust = dap.configurations.cpp
   end,
 }

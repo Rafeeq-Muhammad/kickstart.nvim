@@ -26,46 +26,46 @@ return {
     -- 2. Breakpoints & Session Management
     -- ------------------------------------------------------------------
     -- <Leader>b: Toggle Breakpoint (Red dot)
-    { '<leader>b', function() require('dap').toggle_breakpoint() end, desc = 'Debug: Toggle Breakpoint' },
+    { '<leader>dt', function() require('dap').toggle_breakpoint() end, desc = '[d]ebug: [t]oggle Breakpoint' },
 
     -- <Leader>B: Set Conditional Breakpoint (e.g., "stop only if i == 5")
-    { '<leader>B', function() require('dap').set_breakpoint(vim.fn.input('Breakpoint condition: ')) end, desc = 'Debug: Set Conditional Breakpoint' },
+    { '<leader>db', function() require('dap').set_breakpoint(vim.fn.input('[d]ebug [b]reakpoint condition: ')) end, desc = 'Debug: Set Conditional Breakpoint' },
 
     -- <Leader>lp: Set Log Point (Print message to console without stopping)
     { '<leader>lp', function() require('dap').set_breakpoint(nil, nil, vim.fn.input('Log point message: ')) end, desc = 'Debug: Set Log Point' },
 
     -- <Leader>dr: Restart the session (Kill and restart)
-    { '<leader>dr', function() require('dap').restart() end, desc = 'Debug: Restart Session' },
+    { '<leader>dr', function() require('dap').restart() end, desc = '[d]ebug: [r]estart Session' },
 
     -- <Leader>dl: Run Last (Re-run the last debug configuration - great for repetitive testing)
-    { '<leader>dl', function() require('dap').run_last() end, desc = 'Debug: Run Last Configuration' },
+    { '<leader>dl', function() require('dap').run_last() end, desc = '[d]ebug: Run [l]ast Configuration' },
 
     -- <Leader>dt: Terminate (Stop everything and close UI)
-    { '<leader>dt', function()
+    { '<leader>dT', function()
         require('dap').terminate()
         require('dapui').close()
-    end, desc = 'Debug: Terminate Session & Close UI' },
+    end, desc = '[d]ebug: [T]erminate Session & Close UI' },
 
     -- ------------------------------------------------------------------
     -- 3. UI & Variable Inspection
     -- ------------------------------------------------------------------
     -- <Leader>du: Toggle the UI (Open/Close sidebar and console)
-    { '<leader>du', function() require('dapui').toggle() end, desc = 'Debug: Toggle DAP UI' },
+    { '<leader>du', function() require('dapui').toggle() end, desc = '[d]ebug: Toggle DAP [u]I' },
 
     -- <Leader>dh: Hover (Show value of variable under cursor in a floating window)
     { '<leader>dh', function()
         require('dap.ui.widgets').hover()
-    end, mode = {'n', 'v'}, desc = 'Debug: Hover Variable Value' },
+    end, mode = {'n', 'v'}, desc = '[d]ebug: [h]over Variable Value' },
 
     -- <Leader>de: Eval (Evaluate expression under cursor or selection)
     { '<leader>de', function()
         require('dapui').eval()
-    end, mode = {'n', 'v'}, desc = 'Debug: Evaluate Expression' },
+    end, mode = {'n', 'v'}, desc = '[d]ebug: [e]valuate Expression' },
 
     -- Optional: Use K (Shift+k) to hover while debugging
-    { 'K', function()
+    { '<leader>dK', function()
         require('dap.ui.widgets').hover()
-    end, desc = 'Debug: Hover Variable Value (K)' },
+    end, desc = '[d]ebug: Hover Variable Value (K)' },
   },
   config = function()
     local dap = require 'dap'
@@ -95,8 +95,8 @@ return {
     }
 
     dap.listeners.after.event_initialized['dapui_config'] = dapui.open
-    dap.listeners.before.event_terminated['dapui_config'] = dapui.close
-    dap.listeners.before.event_exited['dapui_config'] = dapui.close
+    -- dap.listeners.before.event_terminated['dapui_config'] = dapui.close
+    -- dap.listeners.before.event_exited['dapui_config'] = dapui.close
 
     -- Configure C++ adapter
     dap.adapters.codelldb = {

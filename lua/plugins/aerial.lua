@@ -2,6 +2,8 @@ return {
   {
     'stevearc/aerial.nvim',
     event = 'VeryLazy',
-    opts = {},
+    opts = {
+      default_direction = "left",
+    },
   },
 }

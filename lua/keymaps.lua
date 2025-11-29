@@ -75,3 +75,9 @@ end, { desc = '[b]uffer [D]elete all other buffers' })
 
 -- Change directory to current directory
 vim.keymap.set('n', '<leader>cd', '<cmd>cd %:p:h<CR>', { desc = '[c]hange [d]irectory to current directory' })
+
+-- Toggle Aerial
+vim.keymap.set('n', '<leader>a', '<cmd>AerialToggle<CR>', { desc = 'Toggle Aerial' })
+
+-- Persistence
+vim.keymap.set('n', '<leader>pl', function() require('persistence').load({ last = true }) end, { desc = '[p]ersistence [l]oad last session' })

@@ -256,20 +256,23 @@ return {
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
+      -- mason-lspconfig v2 auto-enables every installed server by default, which ends up
+      -- starting `stylua --lsp` (the Mason binary lacks that feature). Disable auto enable
+      -- and manually set up only the servers we've listed above.
       require('mason-lspconfig').setup {
-        ensure_installed = {}, -- explicitly set to an empty table (Kickstart populates installs via mason-tool-installer)
-        automatic_installation = false,
-        handlers = {
-          function(server_name)
-            local server = servers[server_name] or {}
-            -- This handles overriding only values explicitly passed
-            -- by the server configuration above. Useful when disabling
-            -- certain features of an LSP (for example, turning off formatting for ts_ls)
-            server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
-            require('lspconfig')[server_name].setup(server)
-          end,
-        },
+        ensure_installed = {}, -- installs handled by mason-tool-installer above
+        automatic_enable = false,
       }
+
+      for server_name, server in pairs(servers) do
+        -- Merge our capabilities per server using the new vim.lsp.config API (Nvim 0.11+).
+        vim.lsp.config(server_name, vim.tbl_deep_extend('force', {
+          capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {}),
+        }, server))
+      end
+
+      -- Enable only the servers we configured above.
+      vim.lsp.enable(vim.tbl_keys(servers))
     end,
   },
 }

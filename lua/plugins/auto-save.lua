@@ -5,7 +5,8 @@ return {
     cmd = 'ASToggle',
     event = { 'InsertLeave', 'TextChanged' },
     opts = {
-      -- Your config goes here or leave it empty
+      enabled = true,
+      debounce_delay = 100,
     },
   },
 }

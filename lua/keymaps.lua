@@ -135,7 +135,6 @@ local function cycle_kanagawa_variant()
 
   local next_variant = kanagawa_variants[(idx % #kanagawa_variants) + 1]
   set_kanagawa_variant(next_variant)
-  vim.notify('Kanagawa → ' .. next_variant:gsub('^kanagawa%-', ''), vim.log.levels.INFO, { title = 'Colorscheme' })
 end
 
 vim.keymap.set('n', '<leader>k', cycle_kanagawa_variant, { desc = 'Cycle Kanagawa variants' })

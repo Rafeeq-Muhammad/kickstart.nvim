@@ -76,6 +76,9 @@ end, { desc = '[b]uffer [D]elete all other buffers' })
 -- Change directory to current directory
 vim.keymap.set('n', '<leader>cd', '<cmd>cd %:p:h<CR>', { desc = '[c]hange [d]irectory to current directory' })
 
+-- Change directory to parent directory
+vim.keymap.set('n', '<leader>.', '<cmd>cd ..<CR>', { desc = 'change directory to parent directory' })
+
 -- Toggle Aerial
 vim.keymap.set('n', '<leader>a', '<cmd>AerialToggle<CR>', { desc = 'Toggle Aerial' })
 
@@ -92,3 +95,20 @@ vim.keymap.set('n', '<leader>g', function()
     vim.notify('Not a C++ file', vim.log.levels.WARN)
   end
 end, { desc = '[g]++ compile' })
+
+-- Cycle colorschemes
+vim.keymap.set('n', '<leader>k', function()
+  local colorschemes = { 'kanagawa', 'kanagawa-lotus' }
+  local current_scheme = vim.g.colors_name
+  local next_scheme = colorschemes[1]
+
+  for i, scheme in ipairs(colorschemes) do
+    if scheme == current_scheme then
+      next_scheme = colorschemes[(i % #colorschemes) + 1]
+      break
+    end
+  end
+
+  vim.cmd.colorscheme(next_scheme)
+  vim.notify('Colorscheme: ' .. next_scheme)
+end, { desc = 'Cycle [k]olorschemes' })

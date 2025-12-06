@@ -13,7 +13,7 @@ return {
     },
     -- Setting the keymap for the entry point
     keys = {
-      { '<leader>gg', '<cmd>LazyGit<cr>', desc = 'LazyGit' },
+      { '<leader>g', '<cmd>LazyGit<cr>', desc = 'LazyGit' },
     },
   },
 }

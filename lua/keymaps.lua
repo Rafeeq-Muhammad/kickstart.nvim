@@ -86,7 +86,7 @@ vim.keymap.set('n', '<leader>a', '<cmd>AerialToggle<CR>', { desc = 'Toggle Aeria
 vim.keymap.set('n', '<leader>pl', function() require('persistence').load({ last = true }) end, { desc = '[p]ersistence [l]oad last session' })
 
 -- Compile C++ file with g++
-vim.keymap.set('n', '<leader>g', function()
+vim.keymap.set('n', '<leader>G', function()
   local file = vim.fn.expand '%'
   local output = vim.fn.expand '%:r'
   if file:match '%.cpp$' or file:match '%.cc$' then

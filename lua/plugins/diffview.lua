@@ -9,5 +9,13 @@ return {
       { '<leader>dc', '<cmd>DiffviewOpen HEAD~1<cr>', desc = 'Diffview current [c]ommit vs parent commit' },
       { '<leader>dh', '<cmd>DiffviewOpen HEAD<cr>', desc = 'Diffview current commit vs [h]ead' },
     },
+    opts = {
+      hooks = {
+        -- Close the file panel by default when opening diffview
+        view_opened = function()
+          vim.cmd('DiffviewToggleFiles')
+        end,
+      },
+    },
   },
 }

@@ -96,19 +96,46 @@ vim.keymap.set('n', '<leader>g', function()
   end
 end, { desc = '[g]++ compile' })
 
--- Cycle colorschemes
-vim.keymap.set('n', '<leader>k', function()
-  local colorschemes = { 'kanagawa', 'kanagawa-lotus' }
-  local current_scheme = vim.g.colors_name
-  local next_scheme = colorschemes[1]
+-- Cycle Kanagawa variants without relying on vim.g.colors_name
+local kanagawa_variants = { 'kanagawa-wave', 'kanagawa-dragon', 'kanagawa-lotus' }
+local kanagawa_group = vim.api.nvim_create_augroup('kanagawa-variant-tracker', { clear = true })
 
-  for i, scheme in ipairs(colorschemes) do
-    if scheme == current_scheme then
-      next_scheme = colorschemes[(i % #colorschemes) + 1]
+vim.api.nvim_create_autocmd('ColorScheme', {
+  desc = 'Remember the currently loaded Kanagawa variant',
+  group = kanagawa_group,
+  pattern = 'kanagawa*',
+  callback = function(event)
+    for _, name in ipairs(kanagawa_variants) do
+      if name == event.match then
+        vim.g.__kanagawa_active_variant = name
+        return
+      end
+    end
+  end,
+})
+
+local function set_kanagawa_variant(name)
+  local ok, err = pcall(vim.cmd.colorscheme, name)
+  if not ok then
+    vim.notify('Failed to load ' .. name .. ': ' .. err, vim.log.levels.ERROR)
+    return
+  end
+  vim.g.__kanagawa_active_variant = name
+end
+
+local function cycle_kanagawa_variant()
+  local current = vim.g.__kanagawa_active_variant
+  local idx = 0
+  for i, name in ipairs(kanagawa_variants) do
+    if name == current then
+      idx = i
       break
     end
   end
 
-  vim.cmd.colorscheme(next_scheme)
-  vim.notify('Colorscheme: ' .. next_scheme)
-end, { desc = 'Cycle [k]olorschemes' })
+  local next_variant = kanagawa_variants[(idx % #kanagawa_variants) + 1]
+  set_kanagawa_variant(next_variant)
+  vim.notify('Kanagawa → ' .. next_variant:gsub('^kanagawa%-', ''), vim.log.levels.INFO, { title = 'Colorscheme' })
+end
+
+vim.keymap.set('n', '<leader>k', cycle_kanagawa_variant, { desc = 'Cycle Kanagawa variants' })

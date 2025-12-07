@@ -42,3 +42,35 @@ vim.api.nvim_create_autocmd('ColorScheme', {
 
 -- Apply once on startup in case a colorscheme was already loaded
 vim.schedule(apply_diff_highlights)
+
+-- High-contrast selection/search highlights (Visual and Search can be too subtle in some themes)
+local function apply_selection_highlights()
+  local palette = vim.o.background == 'light' and {
+    Visual = { bg = '#0d3a78', fg = '#e9f2ff', bold = true },
+    VisualNOS = { bg = '#0d3a78', fg = '#e9f2ff', bold = true },
+    Search = { bg = '#eab308', fg = '#0f172a', bold = true },
+    IncSearch = { bg = '#c47100', fg = '#0f172a', bold = true },
+    CurSearch = { bg = '#eab308', fg = '#0f172a', bold = true },
+  } or {
+    Visual = { bg = '#1f6feb', fg = '#0b0d10', bold = true },
+    VisualNOS = { bg = '#1f6feb', fg = '#0b0d10', bold = true },
+    Search = { bg = '#f6c177', fg = '#0b0d10', bold = true },
+    IncSearch = { bg = '#e0af68', fg = '#0b0d10', bold = true },
+    CurSearch = { bg = '#f6c177', fg = '#0b0d10', bold = true },
+  }
+
+  for group, opts in pairs(palette) do
+    vim.api.nvim_set_hl(0, group, opts)
+  end
+end
+
+local selection_group = vim.api.nvim_create_augroup('custom-selection-highlights', { clear = true })
+vim.api.nvim_create_autocmd('ColorScheme', {
+  desc = 'Force high-contrast Visual/Search highlights',
+  group = selection_group,
+  callback = function()
+    vim.schedule(apply_selection_highlights)
+  end,
+})
+
+vim.schedule(apply_selection_highlights)

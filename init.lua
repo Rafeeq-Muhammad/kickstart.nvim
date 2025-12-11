@@ -1,4 +1,4 @@
--- Load global settings (mapleader, have_nerd_font)
+-- global settings (mapleader, have_nerd_font)
 require 'globals'
 
 -- Load Neovim options

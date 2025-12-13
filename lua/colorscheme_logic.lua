@@ -143,7 +143,7 @@ function M.cycle_colorscheme()
     -- This ensures we know exactly which VARIATION we are on.
     vim.g.gemini_last_colorscheme = next_alias
     
-    vim.notify("Colorscheme: " .. next_alias)
+    -- vim.notify("Colorscheme: " .. next_alias)
   else
     vim.notify("Failed to load " .. scheme_command .. ": " .. err, vim.log.levels.ERROR)
   end

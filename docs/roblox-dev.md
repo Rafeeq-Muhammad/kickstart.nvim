@@ -15,16 +15,20 @@ Here is the synthesized guide, refining the installation workflow based on the f
 **Run this in your Fish shell:**
 
 ```fish
-# 1. Download and trust Aftman
-curl -L https://github.com/LPGhatguy/aftman/releases/latest/download/aftman-linux-amd64.zip -o aftman.zip
+# 1. Download the correct file (v0.3.0)
+curl -L https://github.com/LPGhatguy/aftman/releases/download/v0.3.0/aftman-0.3.0-linux-x86_64.zip -o aftman.zip
+
+# 2. Unzip it
 unzip aftman.zip
 
-# 2. Self-install (Updates paths automatically)
+# 3. Make it executable
+chmod +x aftman
+
+# 4. Run self-install
 ./aftman self-install
 
-# 3. Reload shell configuration (so 'aftman' is in PATH)
-source ~/.config/fish/config.fish
-
+# 5. Add aftman to your path permanently
+fish_add_path ~/.aftman/bin
 ```
 
 *(Note: If `aftman` isn't found after this, you may need to add `set -Ua fish_user_paths $HOME/.aftman/bin` to your config).*
@@ -68,24 +72,30 @@ Ensure you are using `luau-lsp.nvim` for the best compatibility.
 ```lua
 return {
   "lopi-py/luau-lsp.nvim",
+  dependencies = {
+    "nvim-lua/plenary.nvim",
+    "saghen/blink.cmp", -- Depend on blink so we can get capabilities
+  },
   opts = {
     platform = {
       type = "roblox",
     },
     sourcemap = {
       enabled = true,
-      autogenerate = false, -- We handle this manually via CLI for performance
+      autogenerate = false, -- We handle this manually via CLI (rojo sourcemap ...)
       rojo_project_file = "default.project.json",
     },
     types = {
-      roblox_security_level = "PluginSecurity", -- Useful for plugin dev
+      roblox_security_level = "PluginSecurity",
+    },
+    -- Pass capabilities to the server so blink.cmp works
+    server = {
+      capabilities = require('blink.cmp').get_lsp_capabilities(),
+      -- Optional: Ensure it recognizes standard Lua files too, not just .luau
+      filetypes = { "lua", "luau" }, 
     },
   },
-  dependencies = {
-    "nvim-lua/plenary.nvim",
-  },
 }
-
 ```
 
 ---
@@ -116,3 +126,110 @@ end
 ```
 
 Would you like me to help you set up a `tmux` session script so you can spin up the environment (Server pane, Sourcemap pane, Neovim pane) with one command?
+
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+You should name this new file `lua/plugins/roblox.lua`.
+
+Since you are using `lazy.nvim`, it will automatically pick up this new file as long as it is inside your `lua/plugins/` folder.
+
+###1. The Conflict Question**Do you need to modify your existing LSP file?**
+**No**, but with one condition:
+
+* Ensure that `luau_lsp` is **NOT** listed in the `servers` table in your main LSP file. (Looking at your code, it isn't listed, so you are safe).
+
+**Why?**
+Your main LSP file uses `mason-lspconfig` to setup servers generically. `luau-lsp.nvim` is a specialized "wrapper" plugin that sets up the server for you with extra Roblox-specific magic (like the sourcemap handling). If you defined it in both places, they would fight. Keeping them in separate files is the correct approach.
+
+###2. The Updated Code (`lua/plugins/roblox.lua`)I have updated your snippet to include **capabilities**.
+In your main config, you set up `blink.cmp` capabilities for autocompletion. You need to pass those same capabilities to this plugin so your Roblox autocompletion works smoothly.
+
+**Save this as `lua/plugins/roblox.lua`:**
+
+```lua
+return {
+  "lopi-py/luau-lsp.nvim",
+  dependencies = {
+    "nvim-lua/plenary.nvim",
+    "saghen/blink.cmp", -- Depend on blink so we can get capabilities
+  },
+  opts = {
+    platform = {
+      type = "roblox",
+    },
+    sourcemap = {
+      enabled = true,
+      autogenerate = false, -- We handle this manually via CLI (rojo sourcemap ...)
+      rojo_project_file = "default.project.json",
+    },
+    types = {
+      roblox_security_level = "PluginSecurity",
+    },
+    -- Pass capabilities to the server so blink.cmp works
+    server = {
+      capabilities = require('blink.cmp').get_lsp_capabilities(),
+      -- Optional: Ensure it recognizes standard Lua files too, not just .luau
+      filetypes = { "lua", "luau" }, 
+    },
+  },
+}
+
+```
+
+###3. Handling the "Double LSP" IssueYou now have two Language Servers that handle `.lua` files:
+
+1. **`lua_ls`** (In your main config): Great for Neovim config files.
+2. **`luau_lsp`** (In this new file): Great for Roblox files.
+
+Neovim is usually smart enough to run both, but `lua_ls` might annoy you inside a Roblox project by complaining about global variables like `game` or `workspace`.
+
+**The Fix:**
+If `lua_ls` becomes annoying in your Roblox files, create a file named `.luarc.json` in the root of your Roblox project (same folder as `default.project.json`) with this content:
+
+```json
+{
+    "diagnostics": {
+        "disable": ["lowercase-global", "undefined-global"]
+    },
+    "workspace": {
+        "checkThirdParty": false,
+        "ignoreDir": [".git", ".rojo", "sourcemap.json"]
+    }
+}
+
+```
+
+This tells the standard Lua server to relax while you are working on your game.
+
+---
+
+Prompting with Gemini/Codex: `"Use modern Luau type-checking syntax and the task library instead of wait/spawn." This fixes 80% of the bad legacy code they tend to generate.`

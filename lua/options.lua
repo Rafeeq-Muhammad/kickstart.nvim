@@ -26,6 +26,12 @@ end)
 -- Enable break indent
 vim.o.breakindent = true
 
+-- Sets the visual width of a tab character to 4 spaces
+vim.opt.tabstop = 4
+
+-- Disable swap files (the files ending in .swp)
+vim.opt.swapfile = false
+
 -- Save undo history
 vim.o.undofile = true
 

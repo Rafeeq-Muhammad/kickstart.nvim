@@ -65,9 +65,8 @@ vim.keymap.set('n', '<leader>bD', function()
   local current_buf = vim.api.nvim_get_current_buf()
   for _, buf in ipairs(vim.api.nvim_list_bufs()) do
     if buf ~= current_buf then
-      local info = vim.fn.getbufinfo(buf)[1]
-      if info and info.listed then
-        vim.cmd('bdelete! ' .. buf)
+      if vim.api.nvim_buf_is_valid(buf) and vim.fn.buflisted(buf) == 1 then
+        pcall(vim.api.nvim_buf_delete, buf, { force = true })
       end
     end
   end

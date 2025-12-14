@@ -9,6 +9,7 @@ return {
         merge_duplicates = false,
         fps = 60,
         minimum_width = 0,
+        render = 'wrapped-compact'
       }
       vim.notify = notify
     end,

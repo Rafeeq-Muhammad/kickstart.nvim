@@ -149,3 +149,8 @@ local function cycle_kanagawa_variant()
 end
 
 vim.keymap.set('n', '<leader>k', cycle_kanagawa_variant, { desc = 'Cycle Kanagawa variants' })
+
+-- Delete screenshots
+vim.keymap.set('n', '<leader>ds', function()
+  vim.cmd '!rm /home/rafeeqm/workspace/website/ai_prompts/screenshots/*'
+end, { desc = '[d]elete [s]creenshots' })

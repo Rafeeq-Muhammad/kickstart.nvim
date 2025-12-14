@@ -5,7 +5,8 @@ return {
       local notify = require 'notify'
       notify.setup {
         stages = 'fade_in_slide_out',
-        timeout = 500,
+        timeout = 1000,
+        merge_duplicates = false,
       }
       vim.notify = notify
     end,

@@ -17,10 +17,10 @@ return {
       roblox_security_level = "PluginSecurity",
     },
     -- Pass capabilities to the server so blink.cmp works
+    capabilities = require('blink.cmp').get_lsp_capabilities(),
     server = {
-      capabilities = require('blink.cmp').get_lsp_capabilities(),
       -- Optional: Ensure it recognizes standard Lua files too, not just .luau
-      filetypes = { "lua", "luau" }, 
+      filetypes = { "lua", "luau" },
     },
   },
 }

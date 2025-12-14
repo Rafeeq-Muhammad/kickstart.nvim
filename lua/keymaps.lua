@@ -54,6 +54,17 @@ vim.keymap.set('n', '<leader>cfp', function()
   vim.notify('Copied file path: ' .. path)
 end, { desc = '[C]opy [F]ile [P]ath' })
 
+-- Copy file directory to clipboard
+vim.keymap.set('n', '<leader>cfd', function()
+  local path = vim.fn.expand '%:p:h'
+  if path == '' then
+    vim.notify('No file directory to copy', vim.log.levels.WARN)
+    return
+  end
+  vim.fn.setreg('+', path)
+  print('Copied file directory: ' .. path)
+end, { desc = '[C]opy [F]ile [D]irectory' })
+
 -- Replace leetcode input format
 vim.keymap.set('n', '<leader>li', [[:s/\[/\{/g | s/\]/\}/g<CR>]], { desc = 'replace [l]eetcode [i]nput', silent = true })
 

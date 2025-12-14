@@ -63,7 +63,7 @@ vim.keymap.set('n', '<leader>cfd', function()
     return
   end
   vim.fn.setreg('+', path)
-  print('Copied file directory: ' .. path)
+  vim.notify('Copied file directory: ' .. path)
 end, { desc = '[C]opy [F]ile [D]irectory' })
 
 -- Replace leetcode input format

@@ -8,7 +8,8 @@ return {
         timeout = 1,
         merge_duplicates = false,
         fps = 60,
-        minimum_width = 0,
+        minimum_width = 40,
+        max_width = 40,
         render = 'wrapped-compact'
       }
       vim.notify = notify

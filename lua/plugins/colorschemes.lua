@@ -18,5 +18,7 @@ return {
   { "projekt0n/github-nvim-theme" },
   { "catppuccin/nvim", name = "catppuccin" },
   { "sainnhe/gruvbox-material" },
+  { "rose-pine/neovim", name = "rose-pine" },
+  { "sainnhe/everforest" },
+  { "maxmx03/solarized.nvim" },
 }
-

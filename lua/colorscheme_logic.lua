@@ -2,7 +2,7 @@ local M = {}
 
 -- 1. Option Factories
 local function OptBackground(value)
-  return { type = 'post', apply = function() vim.o.background = value end }
+  return { type = 'both', apply = function() vim.o.background = value end }
 end
 
 local function OptGlobal(name, value)
@@ -28,10 +28,31 @@ local registry = {
       OptBackground('dark'),
     }
   },
+  ['gruvbox-dark-soft'] = {
+    real_name = 'gruvbox-material',
+    options = {
+      OptGlobal('gruvbox_material_background', 'soft'),
+      OptBackground('dark'),
+    }
+  },
   ['gruvbox-light-hard'] = {
     real_name = 'gruvbox-material',
     options = {
       OptGlobal('gruvbox_material_background', 'hard'),
+      OptBackground('light'),
+    }
+  },
+  ['gruvbox-light-medium'] = {
+    real_name = 'gruvbox-material',
+    options = {
+      OptGlobal('gruvbox_material_background', 'medium'),
+      OptBackground('light'),
+    }
+  },
+  ['gruvbox-light-soft'] = {
+    real_name = 'gruvbox-material',
+    options = {
+      OptGlobal('gruvbox_material_background', 'soft'),
       OptBackground('light'),
     }
   },
@@ -48,12 +69,21 @@ local registry = {
   ['tokyonight-moon'] = {
     options = { OptBackground('dark') }
   },
+  ['tokyonight-night'] = {
+    options = { OptBackground('dark') }
+  },
 
   -- === Catppuccin Variations ===
   ['catppuccin-latte'] = {
     options = { OptBackground('light') }
   },
   ['catppuccin-mocha'] = {
+    options = { OptBackground('dark') }
+  },
+  ['catppuccin-macchiato'] = {
+    options = { OptBackground('dark') }
+  },
+  ['catppuccin-frappe'] = {
     options = { OptBackground('dark') }
   },
 
@@ -68,11 +98,83 @@ local registry = {
     options = { OptBackground('light') }
   },
 
+  -- === Rose-Pine Variations ===
+  ['rose-pine'] = {
+    options = { OptBackground('dark') }
+  },
+  ['rose-pine-moon'] = {
+    options = { OptBackground('dark') }
+  },
+  ['rose-pine-dawn'] = {
+    options = { OptBackground('light') }
+  },
+
+  -- === Everforest Variations ===
+  ['everforest-dark-hard'] = {
+    real_name = 'everforest',
+    options = {
+      OptGlobal('everforest_background', 'hard'),
+      OptBackground('dark'),
+    }
+  },
+  ['everforest-dark-medium'] = {
+    real_name = 'everforest',
+    options = {
+      OptGlobal('everforest_background', 'medium'),
+      OptBackground('dark'),
+    }
+  },
+  ['everforest-dark-soft'] = {
+    real_name = 'everforest',
+    options = {
+      OptGlobal('everforest_background', 'soft'),
+      OptBackground('dark'),
+    }
+  },
+  ['everforest-light-hard'] = {
+    real_name = 'everforest',
+    options = {
+      OptGlobal('everforest_background', 'hard'),
+      OptBackground('light'),
+    }
+  },
+  ['everforest-light-medium'] = {
+    real_name = 'everforest',
+    options = {
+      OptGlobal('everforest_background', 'medium'),
+      OptBackground('light'),
+    }
+  },
+  ['everforest-light-soft'] = {
+    real_name = 'everforest',
+    options = {
+      OptGlobal('everforest_background', 'soft'),
+      OptBackground('light'),
+    }
+  },
+
+  -- === Nightfox Variations ===
+  ['nightfox']   = { options = { OptBackground('dark') } },
+  ['nordfox']    = { options = { OptBackground('dark') } },
+  ['terafox']    = { options = { OptBackground('dark') } },
+  ['carbonfox']  = { options = { OptBackground('dark') } },
+  ['duskfox']    = { options = { OptBackground('dark') } },
+  ['dayfox']     = { options = { OptBackground('light') } },
+  ['dawnfox']    = { options = { OptBackground('light') } },
+
+  -- === Solarized Variations ===
+  ['solarized-dark'] = {
+    real_name = 'solarized',
+    options = { OptBackground('dark') },
+  },
+  ['solarized-light'] = {
+    real_name = 'solarized',
+    options = { OptBackground('light') },
+  },
+
   -- === Others ===
   ['oxocarbon']  = { options = { OptBackground('dark') } },
   ['cyberdream'] = { options = { OptBackground('dark') } },
-  ['nightfox']   = { options = { OptBackground('dark') } },
-  ['dayfox']     = { options = { OptBackground('light') } },
   ['dracula']    = { options = { OptBackground('dark') } },
   ['github_light'] = { options = { OptBackground('light') } },
 }
@@ -84,19 +186,43 @@ local ordered_schemes = {
   'kanagawa-wave',
   'kanagawa-dragon',
   'gruvbox-dark-hard',
+  'gruvbox-dark-medium',
+  'gruvbox-dark-soft',
+  'everforest-dark-hard',
+  'everforest-dark-medium',
+  'everforest-dark-soft',
   'tokyonight-storm',
+  'tokyonight-moon',
+  'tokyonight-night',
   'catppuccin-mocha',
+  'catppuccin-macchiato',
+  'catppuccin-frappe',
+  'rose-pine',
+  'rose-pine-moon',
+  'nightfox',
+  'nordfox',
+  'terafox',
+  'carbonfox',
+  'duskfox',
+  'solarized-dark',
   'oxocarbon',
   'cyberdream',
-  'nightfox',
   'dracula',
 
   -- Lights
   'kanagawa-lotus',
   'gruvbox-light-hard',
+  'gruvbox-light-medium',
+  'gruvbox-light-soft',
+  'everforest-light-hard',
+  'everforest-light-medium',
+  'everforest-light-soft',
   'tokyonight-day',
   'catppuccin-latte',
+  'rose-pine-dawn',
   'dayfox',
+  'dawnfox',
+  'solarized-light',
   'github_light',
 }
 
@@ -137,7 +263,7 @@ function M.cycle_colorscheme(direction)
 
   -- 1. Apply Pre-load options
   for _, opt in ipairs(options) do
-    if opt.type == 'pre' then opt.apply() end
+    if opt.type == 'pre' or opt.type == 'both' then opt.apply() end
   end
 
   -- 2. Run colorscheme command
@@ -146,7 +272,7 @@ function M.cycle_colorscheme(direction)
   if ok then
     -- 3. Apply Post-load options
     for _, opt in ipairs(options) do
-      if opt.type == 'post' then opt.apply() end
+      if opt.type == 'post' or opt.type == 'both' then opt.apply() end
     end
 
     -- IMPORTANT: We track 'next_alias' (our custom ID), not 'scheme_command'
@@ -164,5 +290,3 @@ function M.setup()
 end
 
 return M
-
-

@@ -101,7 +101,9 @@ local ordered_schemes = {
 }
 
 -- 4. The Logic
-function M.cycle_colorscheme()
+function M.cycle_colorscheme(direction)
+  direction = direction or 1 -- Default to forward
+
   -- Default to the first scheme if our global is missing
   local current_alias = vim.g.gemini_last_colorscheme or ordered_schemes[1]
 
@@ -113,15 +115,23 @@ function M.cycle_colorscheme()
     end
   end
 
-  -- Calculate next index
-  local next_idx = (idx % #ordered_schemes) + 1
+  -- Calculate next index based on direction
+  local next_idx
+  if direction > 0 then
+    next_idx = (idx % #ordered_schemes) + 1
+  else
+    next_idx = idx - 1
+    if next_idx < 1 then
+      next_idx = #ordered_schemes
+    end
+  end
   local next_alias = ordered_schemes[next_idx]
-  
+
   -- Retrieve config from registry
   local config = registry[next_alias] or {}
   local options = config.options or {}
-  
-  -- Determine the actual command to run. 
+
+  -- Determine the actual command to run.
   -- If 'real_name' is defined, use it. Otherwise, use the alias itself.
   local scheme_command = config.real_name or next_alias
 
@@ -138,11 +148,10 @@ function M.cycle_colorscheme()
     for _, opt in ipairs(options) do
       if opt.type == 'post' then opt.apply() end
     end
-    
+
     -- IMPORTANT: We track 'next_alias' (our custom ID), not 'scheme_command'
     -- This ensures we know exactly which VARIATION we are on.
     vim.g.gemini_last_colorscheme = next_alias
-    
     -- vim.notify("Colorscheme: " .. next_alias)
   else
     vim.notify("Failed to load " .. scheme_command .. ": " .. err, vim.log.levels.ERROR)
@@ -150,7 +159,10 @@ function M.cycle_colorscheme()
 end
 
 function M.setup()
-  vim.keymap.set('n', '<leader>k', M.cycle_colorscheme, { desc = 'Cycle through colorschemes' })
+  vim.keymap.set('n', '<C-N>', function() M.cycle_colorscheme(1) end, { desc = 'Cycle colorscheme forward' })
+  vim.keymap.set('n', '<C-P>', function() M.cycle_colorscheme(-1) end, { desc = 'Cycle colorscheme backward' })
 end
 
 return M
+
+

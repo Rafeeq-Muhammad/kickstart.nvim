@@ -81,3 +81,7 @@ vim.o.scrolloff = 10
 vim.o.confirm = true
 
 vim.opt.modeline = false
+
+-- 1. Tell Neovim to use Fish (so it can see your aliases)
+vim.opt.shell = "/usr/bin/fish"
+

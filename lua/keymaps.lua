@@ -154,3 +154,11 @@ vim.keymap.set('n', '<leader>k', cycle_kanagawa_variant, { desc = 'Cycle Kanagaw
 vim.keymap.set('n', '<leader>ds', function()
   vim.cmd '!rm /home/rafeeqm/workspace/website/ai_prompts/screenshots/*'
 end, { desc = '[d]elete [s]creenshots' })
+
+-- 2. Build with <Leader>b (assuming your leader is Space)
+vim.keymap.set('n', '<leader>stmb', '<cmd>make -j8<CR>', { desc = 'Build Project' })
+
+-- 3. Flash with <Leader>f
+-- We use '!' to run a shell command.
+vim.keymap.set('n', '<leader>stmf', '<cmd>!stmflash<CR>', { desc = 'Flash Firmware' })
+

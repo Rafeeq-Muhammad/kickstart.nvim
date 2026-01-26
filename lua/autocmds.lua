@@ -74,3 +74,12 @@ vim.api.nvim_create_autocmd('ColorScheme', {
 })
 
 vim.schedule(apply_selection_highlights)
+
+-- Git Pull Reminder
+vim.api.nvim_create_autocmd('VimEnter', {
+  desc = 'Remind user to git pull on startup',
+  group = vim.api.nvim_create_augroup('git-pull-reminder', { clear = true }),
+  callback = function()
+    vim.notify('Remember to git pull!', vim.log.levels.INFO, { title = 'Git Reminder' })
+  end,
+})

@@ -1,5 +1,27 @@
 local M = {}
 
+local cache_file = vim.fn.stdpath("data") .. "/last_colorscheme.txt"
+
+local function save_colorscheme(alias)
+  local f = io.open(cache_file, "w")
+  if f then
+    f:write(alias)
+    f:close()
+  end
+end
+
+local function load_colorscheme()
+  local f = io.open(cache_file, "r")
+  if f then
+    local content = f:read("*l")
+    f:close()
+    if content and content ~= "" then
+      return content:match("^%s*(.-)%s*$")
+    end
+  end
+  return nil
+end
+
 -- 1. Option Factories
 local function OptBackground(value)
   return { type = 'both', apply = function() vim.o.background = value end }
@@ -7,6 +29,10 @@ end
 
 local function OptGlobal(name, value)
   return { type = 'pre', apply = function() vim.g[name] = value end }
+end
+
+local function OptOnedarkStyle(style)
+  return { type = 'pre', apply = function() require('onedark').setup { style = style } end }
 end
 
 -- 2. The Registry
@@ -91,15 +117,13 @@ local registry = {
   ['kanagawa-wave'] = {
     options = { OptBackground('dark') }
   },
-  ['kanagawa-dragon'] = {
-    options = { OptBackground('dark') }
-  },
   ['kanagawa-lotus'] = {
     options = { OptBackground('light') }
   },
 
   -- === Rose-Pine Variations ===
-  ['rose-pine'] = {
+  ['rose-pine-main'] = {
+    real_name = 'rose-pine',
     options = { OptBackground('dark') }
   },
   ['rose-pine-moon'] = {
@@ -172,11 +196,55 @@ local registry = {
     options = { OptBackground('light') },
   },
 
+  -- === OneDark Variations ===
+  ['onedark-dark'] = {
+    real_name = 'onedark',
+    options = { OptOnedarkStyle('dark'), OptBackground('dark') }
+  },
+  ['onedark-darker'] = {
+    real_name = 'onedark',
+    options = { OptOnedarkStyle('darker'), OptBackground('dark') }
+  },
+  ['onedark-cool'] = {
+    real_name = 'onedark',
+    options = { OptOnedarkStyle('cool'), OptBackground('dark') }
+  },
+  ['onedark-deep'] = {
+    real_name = 'onedark',
+    options = { OptOnedarkStyle('deep'), OptBackground('dark') }
+  },
+  ['onedark-warm'] = {
+    real_name = 'onedark',
+    options = { OptOnedarkStyle('warm'), OptBackground('dark') }
+  },
+  ['onedark-warmer'] = {
+    real_name = 'onedark',
+    options = { OptOnedarkStyle('warmer'), OptBackground('dark') }
+  },
+  ['onedark-light'] = {
+    real_name = 'onedark',
+    options = { OptOnedarkStyle('light'), OptBackground('light') }
+  },
+
   -- === Others ===
   ['oxocarbon']  = { options = { OptBackground('dark') } },
   ['cyberdream'] = { options = { OptBackground('dark') } },
   ['dracula']    = { options = { OptBackground('dark') } },
+  -- === GitHub Variations ===
+  ['github_dark'] = { options = { OptBackground('dark') } },
   ['github_light'] = { options = { OptBackground('light') } },
+  ['github_dark_dimmed'] = { options = { OptBackground('dark') } },
+  ['github_dark_default'] = { options = { OptBackground('dark') } },
+  ['github_light_default'] = { options = { OptBackground('light') } },
+  ['github_dark_high_contrast'] = { options = { OptBackground('dark') } },
+  ['github_light_high_contrast'] = { options = { OptBackground('light') } },
+  ['github_dark_colorblind'] = { options = { OptBackground('dark') } },
+  ['github_light_colorblind'] = { options = { OptBackground('light') } },
+  ['github_dark_tritanopia'] = { options = { OptBackground('dark') } },
+  ['github_light_tritanopia'] = { options = { OptBackground('light') } },
+
+  -- === TokyoDark ===
+  ['tokyodark'] = { options = { OptBackground('dark') } },
 }
 
 -- 3. The Order
@@ -184,49 +252,70 @@ local registry = {
 local ordered_schemes = {
   -- Darks
   'kanagawa-wave',
-  'kanagawa-dragon',
-  'gruvbox-dark-hard',
-  'gruvbox-dark-medium',
   'gruvbox-dark-soft',
-  'everforest-dark-hard',
-  'everforest-dark-medium',
-  'everforest-dark-soft',
-  'tokyonight-storm',
-  'tokyonight-moon',
-  'tokyonight-night',
-  'catppuccin-mocha',
-  'catppuccin-macchiato',
   'catppuccin-frappe',
-  'rose-pine',
-  'rose-pine-moon',
-  'nightfox',
-  'nordfox',
-  'terafox',
-  'carbonfox',
-  'duskfox',
-  'solarized-dark',
-  'oxocarbon',
-  'cyberdream',
+  'rose-pine-main',
   'dracula',
+  'github_dark',
+  'tokyodark',
 
   -- Lights
-  'kanagawa-lotus',
-  'gruvbox-light-hard',
-  'gruvbox-light-medium',
   'gruvbox-light-soft',
-  'everforest-light-hard',
-  'everforest-light-medium',
   'everforest-light-soft',
   'tokyonight-day',
-  'catppuccin-latte',
   'rose-pine-dawn',
   'dayfox',
   'dawnfox',
   'solarized-light',
-  'github_light',
+  'onedark-light',
 }
 
 -- 4. The Logic
+function M.apply_scheme(alias)
+  -- Retrieve config from registry
+  local config = registry[alias] or {}
+  local options = config.options or {}
+
+  -- Determine the actual command to run.
+  -- If 'real_name' is defined, use it. Otherwise, use the alias itself.
+  local scheme_command = config.real_name or alias
+
+  -- 1. Apply Pre-load options
+  for _, opt in ipairs(options) do
+    if opt.type == 'pre' or opt.type == 'both' then opt.apply() end
+  end
+
+  -- 2. Run colorscheme command
+  local ok, err = pcall(vim.cmd.colorscheme, scheme_command)
+
+  if ok then
+    -- 3. Apply Post-load options
+    for _, opt in ipairs(options) do
+      if opt.type == 'post' or opt.type == 'both' then opt.apply() end
+    end
+
+    -- IMPORTANT: We track 'alias' (our custom ID), not 'scheme_command'
+    -- This ensures we know exactly which VARIATION we are on.
+    vim.g.gemini_last_colorscheme = alias
+    save_colorscheme(alias)
+    -- vim.notify("Colorscheme: " .. alias)
+  else
+    vim.notify("Failed to load " .. scheme_command .. ": " .. err, vim.log.levels.ERROR)
+  end
+end
+
+function M.init()
+  local saved = load_colorscheme()
+  local target = saved or ordered_schemes[1]
+  
+  -- ensure the target actually exists in our registry, fallback to first if not
+  if not registry[target] then
+    target = ordered_schemes[1]
+  end
+
+  M.apply_scheme(target)
+end
+
 function M.cycle_colorscheme(direction)
   direction = direction or 1 -- Default to forward
 
@@ -253,35 +342,7 @@ function M.cycle_colorscheme(direction)
   end
   local next_alias = ordered_schemes[next_idx]
 
-  -- Retrieve config from registry
-  local config = registry[next_alias] or {}
-  local options = config.options or {}
-
-  -- Determine the actual command to run.
-  -- If 'real_name' is defined, use it. Otherwise, use the alias itself.
-  local scheme_command = config.real_name or next_alias
-
-  -- 1. Apply Pre-load options
-  for _, opt in ipairs(options) do
-    if opt.type == 'pre' or opt.type == 'both' then opt.apply() end
-  end
-
-  -- 2. Run colorscheme command
-  local ok, err = pcall(vim.cmd.colorscheme, scheme_command)
-
-  if ok then
-    -- 3. Apply Post-load options
-    for _, opt in ipairs(options) do
-      if opt.type == 'post' or opt.type == 'both' then opt.apply() end
-    end
-
-    -- IMPORTANT: We track 'next_alias' (our custom ID), not 'scheme_command'
-    -- This ensures we know exactly which VARIATION we are on.
-    vim.g.gemini_last_colorscheme = next_alias
-    -- vim.notify("Colorscheme: " .. next_alias)
-  else
-    vim.notify("Failed to load " .. scheme_command .. ": " .. err, vim.log.levels.ERROR)
-  end
+  M.apply_scheme(next_alias)
 end
 
 function M.setup()
@@ -290,3 +351,6 @@ function M.setup()
 end
 
 return M
+
+
+

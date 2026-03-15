@@ -6,8 +6,9 @@ return {
       require('kanagawa').setup {
         theme = 'wave',
       }
-      vim.cmd.colorscheme 'kanagawa-wave'
-      require('colorscheme_logic').setup()
+      local c_logic = require('colorscheme_logic')
+      c_logic.setup()
+      c_logic.init()
     end,
   },
   { "nyoom-engineering/oxocarbon.nvim" },
@@ -21,4 +22,9 @@ return {
   { "rose-pine/neovim", name = "rose-pine" },
   { "sainnhe/everforest" },
   { "maxmx03/solarized.nvim" },
+  { "navarasu/onedark.nvim" },
+  { "tiagovla/tokyodark.nvim" },
 }
+
+
+

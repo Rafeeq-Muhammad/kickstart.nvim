@@ -1,5 +1,12 @@
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
+--
+-- Disable god-annoying f1 opens help menu
+-- Disable F1 in Normal, Visual, and Operator-pending modes
+vim.keymap.set({'n', 'v', 'o'}, '<F1>', '<nop>')
+-- Disable F1 in Insert mode
+vim.keymap.set('i', '<F1>', '<nop>')
+
 
 -- Clear highlights on search when pressing <Esc> in normal mode
 --  See `:help hlsearch`
